@@ -49,6 +49,20 @@ const methods = {
             default:
                 throw new SyntaxError("method solve missing for function type " + type)
         }
+    },
+    toString: (type, self) => {
+	switch (type) {
+	    case 'constant':
+	        return () => self.value() + ""
+	    case 'variable':
+		return () => self.key()
+	    case 'addition':
+		return () => self.first() + " + " +  self.second()
+	    case 'multiplication':
+		return () => "(" + self.first() + ")(" + self.second() + ")"
+	    default:
+		throw new SyntaxError("method toString missing for function type " + type)
+	}
     }
 }
 
@@ -61,23 +75,23 @@ function getAllMethods(functionType, obj) {
         method = {}
         method[methodName] = getMethod(functionType, methodName, obj)
         return method
-    }).reduce((a,b) => a.assign(b))
+    }).reduce(Object.assign)
 }
 
 function Constant(value) {
-    return m.getAllMethods("constant", base.Constant(value))
+    return getAllMethods("constant", BaseConstant(value))
 }
 
 function Variable(key) {
-    return m.getAllMethods("variable", base.Variable(key))
+    return getAllMethods("variable", BaseVariable(key))
 }
 
 function Add(first, second) {
-    return m.getAllMethods("addition", base.Binary(first, second))
+    return getAllMethods("addition", BaseBinary(first, second))
 }
 
 function Mult(first, second) {
-    return m.getAllMethods("multiplication", base.Binary(first, second))
+    return getAllMethods("multiplication", BaseBinary(first, second))
 }
 
 module.exports = {
