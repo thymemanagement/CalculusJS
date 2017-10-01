@@ -1,6 +1,6 @@
 //Base construction of a constant. Does not implement methods
 //value is of type number
-function Constant(value) {
+function BaseConstant(value) {
     return {
         type: "constant",
         value: () => value
@@ -9,7 +9,7 @@ function Constant(value) {
 
 //Base construction of a variable. Does not implement methods
 //key is of type string
-function Variable(key) {
+function BaseVariable(key) {
     return {
         type: "variable",
         key: () => key
@@ -18,7 +18,7 @@ function Variable(key) {
 
 //Base construction of a unary operator. Does not implement methods
 //composite should be a fully instantiated calc object
-function Unary(composite) {
+function BaseUnary(composite) {
     return {
         type: "unary",
         composite: () => composite
@@ -27,7 +27,7 @@ function Unary(composite) {
 
 //Base construction of a binary operator. Does not implement methods
 //first and second should be fully instantiated calc objects
-function Binary(first, second) {
+function BaseBinary(first, second) {
     return {
         type: "binary",
         first: () => first,
@@ -62,4 +62,27 @@ function getAllMethods(functionType, obj) {
         method[methodName] = getMethod(functionType, methodName, obj)
         return method
     }).reduce((a,b) => a.assign(b))
+}
+
+function Constant(value) {
+    return m.getAllMethods("constant", base.Constant(value))
+}
+
+function Variable(key) {
+    return m.getAllMethods("variable", base.Variable(key))
+}
+
+function Add(first, second) {
+    return m.getAllMethods("addition", base.Binary(first, second))
+}
+
+function Mult(first, second) {
+    return m.getAllMethods("multiplication", base.Binary(first, second))
+}
+
+module.exports = {
+    Constant: Constant,
+    Variable: Variable,
+    Add: Add,
+    Mult: Mult
 }
